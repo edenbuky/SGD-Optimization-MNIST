@@ -15,10 +15,12 @@ Plot to average accuracy on the validation set as a function of 𝜂₀.
 I conducted a run with learning rates 
 𝜂₀∈\{𝟷𝟢⁻⁵,𝟷𝟢⁻⁴,...,𝟷𝟢⁴,𝟷𝟢⁵\} 
 The best result was obtained for 𝜂₀ = 𝟷, with an **accuracy of 97.6%**.
+
 <img width="425" alt="Screenshot 2025-02-11 at 16 28 33" src="https://github.com/user-attachments/assets/40264713-0aa9-48c6-8d9d-0a7bfaa88011" />
 
 To refine the learning rate, we conducted a second run in the range 𝜂₀∈\{𝟢,𝟢.𝟷,𝟢.𝟸...,𝟷.𝟿,𝟸} 
-The best result was obtained for 𝜂₀ = 𝟢.𝟽 with an accuracy of 98.16%.
+The best result was obtained for 𝜂₀ = 𝟢.𝟽 with an **accuracy of 98.16%**.
+
 <img width="447" alt="Screenshot 2025-02-11 at 16 28 22" src="https://github.com/user-attachments/assets/a0e51d38-76de-442c-8e38-e145a48179c2" />
 
 ---
@@ -59,5 +61,42 @@ The classifier's best accuracy with 𝐶 = 𝟢.𝟢𝟢𝟢𝟷, 𝜂₀ = 𝟢
 
 ---
 
+## **1.Analysis for Hinge Loss Optimization**
+In this exercise we will optimize the log loss defined as follows:
+<img width="432" alt="Screenshot 2025-02-11 at 18 07 07" src="https://github.com/user-attachments/assets/7af33d06-5dae-40a4-a091-5f7239cd7d22" />
+(In the lecture you defined the loss with log₂(⋅), but for optimization purposes the logarithm base doesn’t matter).
+Derive the gradient update for this case, and implement the appropriate SGD function.
+In your computations, it is recommended to use various built-in functions (𝚜𝚌𝚒𝚙𝚢.𝚜𝚙𝚎𝚌𝚒𝚊𝚕.𝚜𝚘𝚏𝚝𝚖𝚊𝚡 might be helpful) in order to avoid numerical issues which arise from exponentiating very large numbers.
+### **(a)**
+Train the classifier on the training set using SGD. Use cross-validation on the validation set to find the best 𝜂₀ assuming 𝑇 = 𝟷𝟢𝟢𝟢.
+For each possible 𝜂₀ (for example, you can search on the log scale 𝜂₀ = 𝟷𝟢⁻⁵,𝟷𝟢⁻⁴,...,𝟷𝟢⁴,𝟷𝟢⁵ and increase resolution if needed), assess the performance of 𝜂₀ by averaging the accuracy on the validation set across 10 runs. Plot the average accuracy on the validation set as a function of 𝜂₀​.
+### **Solution:**
+As can be seen, 𝜂₀ ∈\{ 𝟷𝟢⁻⁵,𝟷𝟢⁻⁴,...,𝟷𝟢⁴,𝟷𝟢⁵\} gives 𝜂₀ = 𝟷𝟢⁻⁵ with an accuracy of **95.52%**.
 
+<img width="398" alt="Screenshot 2025-02-11 at 16 30 40" src="https://github.com/user-attachments/assets/4efec72f-a1f0-4513-befc-60955ea7f10b" />
 
+Therefore, we focus on the range  𝜂₀ ∈\{ 𝟷𝟢⁻⁶,𝟸∙𝟷𝟢⁻⁶,...,𝟷𝟢⁻⁵\} In this range, we found that 𝜂₀ = 3∙𝟷𝟢⁻⁶ achieves the maximum accuracy of 96.45%.
+
+<img width="516" alt="Screenshot 2025-02-11 at 16 29 20" src="https://github.com/user-attachments/assets/4e170996-1b77-46bd-9f7a-9c8407024d74" />
+
+---
+### **(b)**
+Using the best 𝜂₀ you found, train the classifier, but for 𝑇 = 𝟸𝟢𝟢𝟢𝟢.
+Show the resulting 𝐰 as an image. What is the accuracy of the best classifier on the test set?
+### **Solution:**
+
+<img width="216" alt="Screenshot 2025-02-11 at 16 32 46" src="https://github.com/user-attachments/assets/53af1081-ed89-4ce5-9a6a-f5d0430fe5f0" />
+
+As before, brighter regions indicate positive weights, where higher pixel values contribute to predicting the positive class, which is "8".
+Darker regions indicate negative weights, where higher pixel values in those regions contribute to predicting the negative class, which is "0".
+With 𝜂₀ = 3∙𝟷𝟢⁻⁶, we achieved an accuracy of approximately **97.44%**. This performance level is quite good.
+
+---
+### **(c)**
+Train the classifier for 𝑇 = 𝟸𝟢𝟢𝟢𝟢 iterations, and plot the norm of 𝐰 as a function of the iteration. How does the norm change as SGD progresses? Explain the phenomenon you observe.
+### **Solution:**
+<img width="278" alt="Screenshot 2025-02-11 at 16 32 55" src="https://github.com/user-attachments/assets/785b5e00-60b0-4316-b23e-150aa1f80e9f" />
+
+As shown in the graph,∥𝐰∥ increases sharply at the beginning and then grows more gradually. This occurs because, at the initial stage, 𝐰 is far from optimal, leading to significant updates that cause the norm to rise rapidly.
+As the SGD algorithm progresses, the updates become smaller due to the decreasing learning rate
+𝜂ₜ = 𝜂₀/𝑡, and the weight vector converges toward the optimal solution, causing the norm to stabilize. This also indicates that most of the learning happens in the early iterations. After a certain point, the incremental learning becomes minimal, and the norm of 𝐰 changes insignificantly.
